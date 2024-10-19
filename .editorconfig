@@ -1,0 +1,18 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# кореневий файл
+root = true
+
+[*]
+indent_style = space      # Використовувати пробіли для відступів
+indent_size = 2           # Розмір відступу - 2 пробіли
+end_of_line = lf          # Використовувати LF для нових рядків
+charset = utf-8           # Використовувати кодування UTF-8
+trim_trailing_whitespace = true  # Вилучити зайві пробіли в кінці рядка
+insert_final_newline = true      # Додати новий рядок в кінці файлу
+
+[*.{js,ts,vue}]
+indent_size = 2           # Відступ 2 пробіли для JS, TS і Vue файлів
+
+[*.json]
+indent_style = tab        # Використовувати табуляцію для JSON файлів
