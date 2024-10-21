@@ -28,7 +28,8 @@ export default [
 	{
 		rules: {
 			// Правила для форматування коду
-			'indent': ['error', 'tab'], // Відступи: 1 табуляція
+			//'vue/html-indent': ['error', 'tab'],  // Встановлюємо правила для індентації в шаблонах Vue
+			// 'indent': ['error', 'tab'], // Відступи: 1 табуляція
 			'no-tabs': 'off', // Вимкнення перевірки на табуляції (якщо використовуєте їх)
 			'space-in-parens': ['error', 'never'], // Пробіли у дужках
 			'comma-dangle': ['error', 'always-multiline'], // Кінцеві коми
