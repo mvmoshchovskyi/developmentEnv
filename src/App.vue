@@ -15,12 +15,19 @@ const createPost = (newPost: Post): void => {
   posts.push(newPost);
 };
 
+const removePost = (id: number): void => {
+  const index = posts.findIndex(post =>  post.id === id);
+  if (index !== -1) {
+    posts.splice(index, 1); // Remove the post using splice
+  }
+};
+
 </script>
 
 <template>
   <div class="app">
     <post-form @create="createPost"/>
-    <post-list :posts="posts"/>
+    <post-list :posts="posts" @remove="removePost" />
   </div>
 </template>
 

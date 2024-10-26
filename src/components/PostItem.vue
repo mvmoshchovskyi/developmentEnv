@@ -1,6 +1,10 @@
 <script setup lang="ts">
-
+import CustomButton from '@/components/UI/CustomButton.vue';
 import { Post } from '@/types/post.ts';
+
+defineEmits<{
+  remove: [id: number];
+}>();
 
 const props = defineProps<{ post: Post }>();
 </script>
@@ -12,15 +16,21 @@ const props = defineProps<{ post: Post }>();
       <div><strong>Description:</strong>{{ props.post.description }}</div>
     </div>
     <div class="post__btns">
-      <button class="btn">Delete</button>
+      <custom-button
+        @click="$emit('remove', props.post.id)"
+      >
+        Remove
+      </custom-button>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+@use '../styles/variables' as *;
+
 .post {
   padding: $base-padding;
-  border: 2px solid $secondary-color; // Use the variable directly
+  border: 2px solid $secondary-color;
   border-radius: 5px;
   margin-top: $base-margin;
   display: flex;
@@ -28,14 +38,4 @@ const props = defineProps<{ post: Post }>();
   justify-content: space-between;
 }
 
-.btn {
-  margin-top: $base-margin;
-  align-self: flex-end;
-  color: $secondary-color;
-  padding: 10px 15px;
-  background: none;
-  border: 1px solid $secondary-color;
-  border-radius: 20px;
-
-}
 </style>
