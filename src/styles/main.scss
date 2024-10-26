@@ -1,5 +1,11 @@
 @use 'variables'; // Імпорт змінних
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 // Використання змінних
 body {
   font-family: variables.$font-stack;

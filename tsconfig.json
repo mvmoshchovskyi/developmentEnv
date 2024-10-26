@@ -17,6 +17,7 @@
 		"skipLibCheck": true,
 		// Пропускає перевірку типів у бібліотечних файлах (файли .d.ts)
 
+		"isolatedModules": true, // має значення true, оскільки Vite використовує esbuild для транспіляції TypeScript і має обмеження на транспілювання одного файлу
 		/* Bundler mode */
 		"moduleResolution": "bundler",
 		// Вказує, що TypeScript повинен вирішувати модулі аналогічно до того, як це роблять інструменти збірки, такі як Webpack або Vite.
