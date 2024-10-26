@@ -1,0 +1,6 @@
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 11",
+    "not dead",
+    "iOS >= 14",
+    "Safari >= 14"
