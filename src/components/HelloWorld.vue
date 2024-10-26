@@ -10,14 +10,16 @@ function handleClick(): void {
 </script>
 
 <template>
+  <div class="example">
   <h1>{{ message }}</h1>
+  </div>
   <button @click="handleClick">Add</button>
 </template>
 
-<style lang="scss" scoped>
-h1 {
-  color: green;
-  font-size: 2em;
-  margin: 20px;
+<style lang="scss">
+.example {
+  background-color: $primary-color; // Використання змінної
+  color: white;
+  padding: 20px;
 }
 </style>

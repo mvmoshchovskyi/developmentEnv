@@ -1,0 +1,8 @@
+@use 'variables'; // Імпорт змінних
+
+// Використання змінних
+body {
+  font-family: variables.$font-stack;
+  background-color: variables.$primary-color;
+  padding: variables.$base-padding;
+}
