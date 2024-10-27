@@ -4,10 +4,7 @@ defineOptions({
   name: 'custom-dialog',
 });
 
-const emit = defineEmits<{
-  // eslint-disable-next-line no-unused-vars
-  (e: 'update:show', value: boolean): void;
-}>();
+const emit = defineEmits(['update:show']);
 
 withDefaults(defineProps<{
     show: boolean;
@@ -19,8 +16,6 @@ withDefaults(defineProps<{
 const hideDialog = (): void => {
   emit('update:show', false);
 };
-
-
 
 </script>
 

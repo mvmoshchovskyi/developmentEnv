@@ -1,15 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import PostForm from '@/components/PostForm.vue';
 import PostList from '@/components/PostList.vue';
 import { Post } from '@/types/post.ts';
 import CustomDialog from '@/components/UI/CustomDialog.vue';
 import CustomButton from '@/components/UI/CustomButton.vue';
 import { useFetch } from '@/src/composables/useFetch.ts';
+import CustomSelect from '@/components/UI/CustomSelect.vue';
 
 const URL = 'https://jsonplaceholder.typicode.com/posts';
 
 const posts = ref<Post[]>([]);
+const selectedSort = ref('');
+const sortOptions = reactive([
+  { value: 'title', name: 'sort by name' },
+  { value: 'description', name: 'sort by description' },
+]);
 
 const { error, loading } = useFetch<Post[]>(`${URL}?_limit=10`, {
   onSuccess: (data) => {
@@ -41,12 +47,21 @@ const removePost = (post: Post): void => {
 <template>
   <div class="app">
     <h1>Page with posts</h1>
-    <custom-button
-      style="margin: 15px 0"
-      @click="showDialog"
-    >
-      Create Post
-    </custom-button>
+    <div class="app__btns">
+      <custom-button
+        @click="showDialog"
+      >
+        Create Post
+      </custom-button>
+
+      <custom-select
+        v-model="selectedSort"
+        :options="sortOptions"
+      >
+
+      </custom-select>
+    </div>
+
     <custom-dialog v-model:show="dialogVisible">
       <post-form @create="createPost"/>
     </custom-dialog>
@@ -70,6 +85,12 @@ const removePost = (post: Post): void => {
 
 .app {
   padding: $base-padding;
+
+  &__btns {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+  }
 }
 
 .error-message {

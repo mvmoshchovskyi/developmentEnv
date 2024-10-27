@@ -4,10 +4,7 @@ defineOptions({
   name: 'custom-input',
 });
 
-const emit = defineEmits<{
-  // eslint-disable-next-line no-unused-vars
-  (event: 'update:modelValue', value: string | number): void;
-}>();
+const emit = defineEmits(['update:modelValue']);
 
 defineProps<{ modelValue: string | number}>();
 

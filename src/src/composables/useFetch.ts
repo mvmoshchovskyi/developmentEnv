@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import axios from 'axios';
 
+// eslint-disable-next-line no-unused-vars
 export function useFetch<T>(url: string, options?: { onSuccess?: (data: T) => void }) {
   const data = ref<T | null>(null);
   const error = ref<string | null>(null);
