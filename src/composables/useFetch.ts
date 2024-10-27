@@ -1,7 +1,12 @@
 import { ref } from 'vue';
-import axios from 'axios';
+import axios, { AxiosHeaders, AxiosResponse } from 'axios';
 
-export function useFetch<T>(url: string, options?: { onSuccess?: (data: T) => void }) {
+interface UseFetchOptions<T> {
+  onSuccess?: (data: T, headers: Partial<AxiosHeaders>) => void; // Specify the headers parameter type
+  params?: Record<string, unknown>; // Allow additional query parameters
+}
+
+export function useFetch<T>(url: string, options?: UseFetchOptions<T>) {
   const data = ref<T | null>(null);
   const error = ref<string | null>(null);
   const loading = ref(true);
@@ -11,11 +16,13 @@ export function useFetch<T>(url: string, options?: { onSuccess?: (data: T) => vo
     error.value = null;
 
     try {
-      const response = await axios.get<T>(url);
+      const response: AxiosResponse<T> = await axios.get<T>(url, {
+        params: options?.params,
+      });
       data.value = response.data;
 
       if (options?.onSuccess) {
-        options.onSuccess(response.data);
+        options.onSuccess(response.data, response.headers);
       }
     } catch (err: unknown) {
       error.value = err instanceof Error ? err.message : 'Failed to fetch data';

@@ -1,29 +1,45 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { useFetch } from '@/composables/useFetch.ts';
 import PostForm from '@/components/PostForm.vue';
 import PostList from '@/components/PostList.vue';
 import { ISortOption, SortOptionValues, SortOptionNames } from '@/types/sort.ts';
 import { IPost } from '@/types/post.ts';
 import { POST_URL } from '@/constants/url.ts';
+import CustomInput from '@/components/UI/CustomInput.vue';
+import { AxiosHeaders } from 'axios';
 
+const searchQuery = ref('');
 const posts = ref<IPost[]>([]);
 const selectedSort = ref('');
 const sortOptions = reactive<ISortOption[]>([
   { value: SortOptionValues.Title, name: SortOptionNames.Title },
   { value: SortOptionValues.Description, name: SortOptionNames.Description },
 ]);
+const page = ref(1);
+const limit = ref(10);
+const totalPage = ref(0);
 
-const { error, loading } = useFetch<IPost[]>(`${POST_URL}?_limit=10`, {
-  onSuccess: (data) => {
-    // When data is fetched successfully, set the posts
+const { error, loading, refresh } = useFetch<IPost[]>(POST_URL, {
+  params: {
+    _page: page.value,
+    _limit: limit.value,
+  },
+  onSuccess: (data: IPost[], headers: Partial<AxiosHeaders>) => {
+    // When data is fetched successfully, count page and set the posts
+    totalPage.value = Math.ceil(headers['x-total-count'] / limit.value);
     posts.value = data; // Set posts to the fetched data
   },
 });
 const dialogVisible = ref(false);
 
-const showDialog = () => {
+const showDialog = (): void => {
   dialogVisible.value = true;
+};
+
+const changePage = (pageNumber: number): void => {
+  page.value = pageNumber;
+  // refresh();
 };
 
 const createPost = (newPost: IPost): void => {
@@ -39,7 +55,7 @@ const removePost = (post: IPost): void => {
   }
 };
 
-const sortedPosts = computed(() => {
+const sortedPosts = computed((): IPost[] => {
   return [...posts.value].sort((post1, post2) => {
     const value1 = post1[selectedSort.value as keyof IPost];
     const value2 = post2[selectedSort.value as keyof IPost];
@@ -57,6 +73,14 @@ const sortedPosts = computed(() => {
   });
 });
 
+const sortedAndSearchedPosts = computed((): IPost[] => {
+  return sortedPosts.value.filter(post => post.title.toLowerCase().includes(searchQuery.value.toLowerCase()));
+});
+
+watch(page, () => {
+  refresh();
+});
+
 // watch(selectedSort, (newSortValue) => {
 //   posts.value.sort((post1, post2) => {
 //     return post1[newSortValue]?.localeCompare(post2[newSortValue])
@@ -66,12 +90,15 @@ const sortedPosts = computed(() => {
 //   console.log('Selected Sort:', newSort);
 //   console.log('Dialog Visible:', newDialogVisible);
 // });
-
 </script>
 
 <template>
   <div class="app">
     <h1>Page with posts</h1>
+    <custom-input
+      placeholder="Search..."
+      v-model="searchQuery"
+    />
     <div class="app__btns">
       <custom-button
         @click="showDialog"
@@ -99,9 +126,23 @@ const sortedPosts = computed(() => {
 
     <post-list
       v-if="!loading && !error"
-      :posts="sortedPosts"
+      :posts="sortedAndSearchedPosts"
       @remove="removePost"
     />
+
+    <div class="page__wrapper">
+      <div
+        v-for="pageNumber in totalPage"
+        class="page"
+        :key="pageNumber"
+        :class="{
+          'current-page': page === pageNumber,
+        }"
+        @click="changePage(pageNumber)"
+      >
+        {{ pageNumber }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -120,5 +161,19 @@ const sortedPosts = computed(() => {
 
 .error-message {
   color: red;
+}
+
+.page {
+  &__wrapper {
+    display: flex;
+    margin-top: $base-margin;
+  }
+
+  border: 1px solid #000000;
+  padding: $base-padding;
+}
+
+.current-page {
+  border: 2px solid $secondary-color;
 }
 </style>

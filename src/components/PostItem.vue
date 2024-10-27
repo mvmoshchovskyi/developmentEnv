@@ -15,6 +15,7 @@ const removePost = (post: IPost) => {
 <template>
   <div class="post">
     <div>
+      <div><strong>{{ props.post.id }}</strong></div>
       <div><strong>Name:</strong>{{ props.post.title }}</div>
       <div><strong>Description:</strong>{{ props.post.body }}</div>
     </div>
