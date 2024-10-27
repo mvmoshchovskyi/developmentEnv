@@ -13,19 +13,23 @@ const props = withDefaults(defineProps<{
 });
 
 const removePost = (post: IPost): void => {
-   emit('remove', post);
+  emit('remove', post);
 };
 </script>
 
 <template>
   <div v-if="posts.length > 0">
     <h3>Post List</h3>
-    <post-item
-      v-for="post in props.posts"
-      :key="post.id"
-      :post="post"
-      @remove="removePost"
-    />
+    <transition-group
+      name="post-list"
+    >
+      <post-item
+        v-for="post in props.posts"
+        :key="post.id"
+        :post="post"
+        @remove="removePost"
+      />
+    </transition-group>
   </div>
   <h2
     v-else
@@ -36,7 +40,16 @@ const removePost = (post: IPost): void => {
 </template>
 
 <style scoped lang="scss">
-@use '../styles/variables' as *; // Import all variables
-
-
+.post-list-enter-active,
+.post-list-leave-active {
+  transition: all 0.5s ease;
+}
+.post-list-enter-from,
+.post-list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+.post-list-move {
+  transition: transform 0.8s ease;
+}
 </style>

@@ -14,7 +14,6 @@ const createPost = (): void => {
   post.title = '';
   post.body = '';
 };
-
 </script>
 
 <template>
@@ -39,8 +38,6 @@ const createPost = (): void => {
 </template>
 
 <style scoped lang="scss">
-@use '../styles/variables' as *;
-
 form {
   display: flex;
   flex-direction: column;
