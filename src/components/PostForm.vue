@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
-import { Post } from '@/types/post.ts';
-import CustomInput from '@/components/UI/CustomInput.vue';
+import { IPost} from '@/types/post.ts';
 
 const emit = defineEmits<{
-  create: [post: Post]
+  create: [post: IPost]
 }>();
 
-const post = reactive<Post>({ title: '', body: '' });
+const post = reactive<IPost>({ title: '', body: '' });
 
 const createPost = (): void => {
   const newPost = { ...post, id: Date.now() };
@@ -15,6 +14,7 @@ const createPost = (): void => {
   post.title = '';
   post.body = '';
 };
+
 </script>
 
 <template>

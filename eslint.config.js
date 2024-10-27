@@ -27,6 +27,7 @@ export default [
 	},
 	{
 		rules: {
+
 			// Правила для форматування коду
 			//'vue/html-indent': ['error', 'tab'],  // Встановлюємо правила для індентації в шаблонах Vue
 			// 'indent': ['error', 'tab'], // Відступи: 1 табуляція
@@ -34,11 +35,11 @@ export default [
 			'space-in-parens': ['error', 'never'], // Пробіли у дужках
 			'comma-dangle': ['error', 'always-multiline'], // Кінцеві коми
 			'no-console': 'warn', // Попередження для console.log
-			'no-unused-vars': 'warn', // Попередження для непотрібних змінних
 			'camelcase': 'error', // Правила для camelCase
 			'no-undef': 'warn',
 			'semi': ['error', 'always'], // Додаємо правило для обов'язкової крапки з комою
 			'quotes': ['error', 'single'], // Додаємо правило для одинарних лапок
+			// 'no-unused-vars': 'warn', // Попередження для непотрібних змінних
 		},
 	},
 	{

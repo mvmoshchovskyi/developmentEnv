@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import PostItem from '@/components/PostItem.vue';
-import { Post } from '@/types/post.ts';
+import { IPost } from '@/types/post.ts';
 
 const emit = defineEmits<{
-  remove: [post: Post];
+  remove: [post: IPost];
 }>();
 
 const props = withDefaults(defineProps<{
-  posts: Post[]
+  posts: IPost[]
 }>(), {
-  posts: () => [] as Post[],
+  posts: () => [] as IPost[],
 });
 
-const removePost = (post: Post): void => {
+const removePost = (post: IPost): void => {
    emit('remove', post);
 };
 </script>

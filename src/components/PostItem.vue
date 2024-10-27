@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import CustomButton from '@/components/UI/CustomButton.vue';
-import { Post } from '@/types/post.ts';
+import { IPost } from '@/types/post.ts';
 
 const emit = defineEmits<{
-  remove: [post: Post];
+  remove: [post: IPost];
 }>();
 
-const props = defineProps<{ post: Post }>();
+const props = defineProps<{ post: IPost }>();
 
-const removePost = (post: Post) => {
+const removePost = (post: IPost) => {
   emit('remove', post);
 };
 </script>
