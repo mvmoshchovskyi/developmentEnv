@@ -3,22 +3,22 @@ import axios, { AxiosHeaders, AxiosResponse } from 'axios';
 
 interface UseFetchOptions<T> {
   onSuccess?: (data: T, headers: Partial<AxiosHeaders>) => void; // Specify the headers parameter type
-  params?: Record<string, unknown>; // Allow additional query parameters
+  // params?: Record<string, unknown>; // Allow additional query parameters
+  getParams?: () => Record<string, unknown>; // Add this line
 }
 
 export function useFetch<T>(url: string, options?: UseFetchOptions<T>) {
   const data = ref<T | null>(null);
   const error = ref<string | null>(null);
-  const loading = ref(true);
+  // const loading = ref(false);  // use suspense instead
 
   const fetchData = async () => {
-    loading.value = true;
+    // loading.value = true;
     error.value = null;
 
     try {
-      const response: AxiosResponse<T> = await axios.get<T>(url, {
-        params: options?.params,
-      });
+      const params = options?.getParams ? options.getParams() : {};
+      const response: AxiosResponse<T> = await axios.get<T>(url, { params });
       data.value = response.data;
 
       if (options?.onSuccess) {
@@ -27,7 +27,7 @@ export function useFetch<T>(url: string, options?: UseFetchOptions<T>) {
     } catch (err: unknown) {
       error.value = err instanceof Error ? err.message : 'Failed to fetch data';
     } finally {
-      loading.value = false;
+      // loading.value = false;
     }
   };
 
@@ -37,7 +37,7 @@ export function useFetch<T>(url: string, options?: UseFetchOptions<T>) {
   return {
     data,
     error,
-    loading,
+    // loading,
     refresh: fetchData, // Optionally provide a refresh function to re-fetch data
   };
 }

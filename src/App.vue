@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useFetch } from '@/composables/useFetch.ts';
 import PostForm from '@/components/PostForm.vue';
 import PostList from '@/components/PostList.vue';
@@ -20,15 +20,17 @@ const page = ref(1);
 const limit = ref(10);
 const totalPage = ref(0);
 
-const { error, loading, refresh } = useFetch<IPost[]>(POST_URL, {
-  params: {
-    _page: page.value,
-    _limit: limit.value,
-  },
+const getParams = () => ({
+  _page: page.value,
+  _limit: limit.value,
+});
+
+const { error, refresh } = useFetch<IPost[]>(POST_URL, {
+  getParams,
   onSuccess: (data: IPost[], headers: Partial<AxiosHeaders>) => {
     // When data is fetched successfully, count page and set the posts
     totalPage.value = Math.ceil(headers['x-total-count'] / limit.value);
-    posts.value = data; // Set posts to the fetched data
+    posts.value = [...posts.value, ...data];//// Set posts to the fetched data
   },
 });
 const dialogVisible = ref(false);
@@ -37,10 +39,10 @@ const showDialog = (): void => {
   dialogVisible.value = true;
 };
 
-const changePage = (pageNumber: number): void => {
-  page.value = pageNumber;
-  // refresh();
-};
+// const changePage = (pageNumber: number): void => {
+//   page.value = pageNumber;
+//   refresh();
+// };
 
 const createPost = (newPost: IPost): void => {
   posts.value.push(newPost);
@@ -77,6 +79,28 @@ const sortedAndSearchedPosts = computed((): IPost[] => {
   return sortedPosts.value.filter(post => post.title.toLowerCase().includes(searchQuery.value.toLowerCase()));
 });
 
+const observer = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+  const options = {
+    root: null, // Use the viewport as the root
+    rootMargin: '0px',
+    threshold: 1.0,
+  };
+
+  const callback = (entries: IntersectionObserverEntry[]) => {
+    if (entries[0].isIntersecting && page.value < totalPage.value) {
+      page.value += 1; // Increment page number
+      refresh(); // Fetch new posts for the updated page
+    }
+  };
+  const intersectionObserver = new IntersectionObserver(callback, options);
+
+  if (observer.value) {
+    intersectionObserver.observe(observer.value); // Start observing the element
+  }
+});
+
 watch(page, () => {
   refresh();
 });
@@ -93,57 +117,69 @@ watch(page, () => {
 </script>
 
 <template>
-  <div class="app">
-    <h1>Page with posts</h1>
-    <custom-input
-      placeholder="Search..."
-      v-model="searchQuery"
-    />
-    <div class="app__btns">
-      <custom-button
-        @click="showDialog"
-      >
-        Create Post
-      </custom-button>
+  <Suspense>
+    <template #default>
+      <div class="app">
+        <h1>Page with posts</h1>
+        <custom-input
+          placeholder="Search..."
+          v-model="searchQuery"
+        />
+        <div class="app__btns">
+          <custom-button
+            @click="showDialog"
+          >
+            Create Post
+          </custom-button>
 
-      <custom-select
-        v-model="selectedSort"
-        :options="sortOptions"
-      >
+          <custom-select
+            v-model="selectedSort"
+            :options="sortOptions"
+          >
 
-      </custom-select>
-    </div>
+          </custom-select>
+        </div>
 
-    <custom-dialog v-model:show="dialogVisible">
-      <post-form @create="createPost"/>
-    </custom-dialog>
+        <custom-dialog v-model:show="dialogVisible">
+          <post-form @create="createPost"/>
+        </custom-dialog>
 
-    <div v-if="loading">Loading...</div>
+        <!--        <div v-if="loading">Loading...</div>-->
 
-    <div v-if="error" class="error-message">
-      <p>An error occurred while fetching posts: {{ error }}</p>
-    </div>
+        <div v-if="error" class="error-message">
+          <p>An error occurred while fetching posts: {{ error }}</p>
+        </div>
 
-    <post-list
-      v-if="!loading && !error"
-      :posts="sortedAndSearchedPosts"
-      @remove="removePost"
-    />
+        <post-list
+          v-if="!error"
+          :posts="sortedAndSearchedPosts"
+          @remove="removePost"
+        />
 
-    <div class="page__wrapper">
-      <div
-        v-for="pageNumber in totalPage"
-        class="page"
-        :key="pageNumber"
-        :class="{
-          'current-page': page === pageNumber,
-        }"
-        @click="changePage(pageNumber)"
-      >
-        {{ pageNumber }}
+        <div
+          ref="observer"
+          class="observer"
+        >
+        </div>
+        <!--    <div class="page__wrapper">-->
+        <!--      <div-->
+        <!--        v-for="pageNumber in totalPage"-->
+        <!--        class="page"-->
+        <!--        :key="pageNumber"-->
+        <!--        :class="{-->
+        <!--          'current-page': page === pageNumber,-->
+        <!--        }"-->
+        <!--        @click="changePage(pageNumber)"-->
+        <!--      >-->
+        <!--        {{ pageNumber }}-->
+        <!--      </div>-->
+        <!--    </div>-->
       </div>
-    </div>
-  </div>
+    </template>
+    <template #fallback>
+      <div>Loading...</div>
+    </template>
+  </Suspense>
 </template>
 
 <style lang="scss">
@@ -175,5 +211,10 @@ watch(page, () => {
 
 .current-page {
   border: 2px solid $secondary-color;
+}
+
+.observer {
+  height: 100px; /* Height for the observer element */
+  background-color: lightgray; /* Styling for visibility */
 }
 </style>
