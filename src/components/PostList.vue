@@ -3,7 +3,7 @@ import PostItem from '@/components/PostItem.vue';
 import { Post } from '@/types/post.ts';
 
 const emit = defineEmits<{
-  remove: [id: number];
+  remove: [post: Post];
 }>();
 
 const props = withDefaults(defineProps<{
@@ -12,8 +12,8 @@ const props = withDefaults(defineProps<{
   posts: () => [] as Post[],
 });
 
-const removePost = (id: number): void => {
-  emit('remove', id);
+const removePost = (post: Post): void => {
+   emit('remove', post);
 };
 </script>
 

@@ -7,13 +7,13 @@ const emit = defineEmits<{
   create: [post: Post]
 }>();
 
-const post = reactive<Post>({ title: '', description: '', id: 1 });
+const post = reactive<Post>({ title: '', body: '' });
 
 const createPost = (): void => {
   const newPost = { ...post, id: Date.now() };
   emit('create', newPost);
   post.title = '';
-  post.description = '';
+  post.body = '';
 };
 </script>
 
@@ -28,7 +28,7 @@ const createPost = (): void => {
     <custom-input
       type="text"
       placeholder="Description"
-      v-model="post.description"
+      v-model="post.body"
     />
     <custom-button
       class="btn__position"

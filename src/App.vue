@@ -1,18 +1,22 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 import PostForm from '@/components/PostForm.vue';
 import PostList from '@/components/PostList.vue';
 import { Post } from '@/types/post.ts';
 import CustomDialog from '@/components/UI/CustomDialog.vue';
 import CustomButton from '@/components/UI/CustomButton.vue';
+import { useFetch } from '@/src/composables/useFetch.ts';
 
-const posts = reactive<Post[]>([
-  { id: 1, title: 'JS', description: 'post description 1' },
-  { id: 2, title: 'Python', description: 'post description 2' },
-  { id: 3, title: 'Java', description: 'post description 3' },
-  { id: 4, title: 'CC', description: 'post description 3' },
-]);
+const URL = 'https://jsonplaceholder.typicode.com/posts';
 
+const posts = ref<Post[]>([]);
+
+const { error, loading } = useFetch<Post[]>(`${URL}?_limit=10`, {
+  onSuccess: (data) => {
+    // When data is fetched successfully, set the posts
+    posts.value = data; // Set posts to the fetched data
+  },
+});
 const dialogVisible = ref(false);
 
 const showDialog = () => {
@@ -20,14 +24,15 @@ const showDialog = () => {
 };
 
 const createPost = (newPost: Post): void => {
-  posts.push(newPost);
+  posts.value.push(newPost);
   dialogVisible.value = false;
+  // refresh();
 };
 
-const removePost = (id: number): void => {
-  const index = posts.findIndex(post => post.id === id);
+const removePost = (post: Post): void => {
+  const index = posts.value.findIndex(p => post.id === p.id);
   if (index !== -1) {
-    posts.splice(index, 1); // Remove the post using splice
+    posts.value.splice(index, 1); // Remove the post using splice
   }
 };
 
@@ -45,7 +50,18 @@ const removePost = (id: number): void => {
     <custom-dialog v-model:show="dialogVisible">
       <post-form @create="createPost"/>
     </custom-dialog>
-    <post-list :posts="posts" @remove="removePost"/>
+
+    <div v-if="loading">Loading...</div>
+
+    <div v-if="error" class="error-message">
+      <p>An error occurred while fetching posts: {{ error }}</p>
+    </div>
+
+    <post-list
+      v-if="!loading && !error"
+      :posts="posts"
+      @remove="removePost"
+    />
   </div>
 </template>
 
@@ -56,4 +72,7 @@ const removePost = (id: number): void => {
   padding: $base-padding;
 }
 
+.error-message {
+  color: red;
+}
 </style>
