@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { useFetch } from '@/composables/useFetch.ts';
 import PostForm from '@/components/PostForm.vue';
 import PostList from '@/components/PostList.vue';
@@ -30,19 +30,21 @@ const { error, refresh } = useFetch<IPost[]>(POST_URL, {
   onSuccess: (data: IPost[], headers: Partial<AxiosHeaders>) => {
     // When data is fetched successfully, count page and set the posts
     totalPage.value = Math.ceil(headers['x-total-count'] / limit.value);
-    posts.value = [...posts.value, ...data];//// Set posts to the fetched data
+    posts.value = data;
+    // posts.value = [...posts.value, ...data];//// Set posts for infinity scroll
   },
 });
+
 const dialogVisible = ref(false);
 
 const showDialog = (): void => {
   dialogVisible.value = true;
 };
 
-// const changePage = (pageNumber: number): void => {
-//   page.value = pageNumber;
-//   refresh();
-// };
+const changePage = (pageNumber: number): void => {
+  page.value = pageNumber;
+  refresh();
+};
 
 const createPost = (newPost: IPost): void => {
   posts.value.push(newPost);
@@ -79,32 +81,19 @@ const sortedAndSearchedPosts = computed((): IPost[] => {
   return sortedPosts.value.filter(post => post.title.toLowerCase().includes(searchQuery.value.toLowerCase()));
 });
 
-const observer = ref<HTMLElement | null>(null);
 
-onMounted(() => {
-  const options = {
-    root: null, // Use the viewport as the root
-    rootMargin: '0px',
-    threshold: 1.0,
-  };
+// infinity scroll
+// const loadMorePosts = () => {
+//   page.value += 1; // Increment page number
+//   if (page.value < totalPage.value) {
+//     refresh(); // Fetch new posts for the updated page
+//   }
+// };
 
-  const callback = (entries: IntersectionObserverEntry[]) => {
-    if (entries[0].isIntersecting && page.value < totalPage.value) {
-      page.value += 1; // Increment page number
-      refresh(); // Fetch new posts for the updated page
-    }
-  };
-  const intersectionObserver = new IntersectionObserver(callback, options);
 
-  if (observer.value) {
-    intersectionObserver.observe(observer.value); // Start observing the element
-  }
-});
-
-watch(page, () => {
-  refresh();
-});
-
+// watch(page, () => {
+//   refresh();
+// });
 // watch(selectedSort, (newSortValue) => {
 //   posts.value.sort((post1, post2) => {
 //     return post1[newSortValue]?.localeCompare(post2[newSortValue])
@@ -120,6 +109,7 @@ watch(page, () => {
   <div class="posts">
     <h1>Page with posts</h1>
     <custom-input
+      v-focus
       placeholder="Search..."
       v-model="searchQuery"
     />
@@ -148,21 +138,26 @@ watch(page, () => {
       @remove="removePost"
     />
 
-    <div ref="observer" class="observer"></div>
+    <!--    infinity scroll-->
+    <!--    <div-->
+    <!--      class="observer"-->
+    <!--      v-intersection="loadMorePosts"-->
+    <!--    > </div>-->
 
-    <!--    <div class="page__wrapper">-->
-    <!--      <div-->
-    <!--        v-for="pageNumber in totalPage"-->
-    <!--        class="page"-->
-    <!--        :key="pageNumber"-->
-    <!--        :class="{-->
-    <!--          'current-page': page === pageNumber,-->
-    <!--        }"-->
-    <!--        @click="changePage(pageNumber)"-->
-    <!--      >-->
-    <!--        {{ pageNumber }}-->
-    <!--      </div>-->
-    <!--    </div>-->
+
+    <div class="page__wrapper">
+      <div
+        v-for="pageNumber in totalPage"
+        class="page"
+        :key="pageNumber"
+        :class="{
+              'current-page': page === pageNumber,
+            }"
+        @click="changePage(pageNumber)"
+      >
+        {{ pageNumber }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -183,19 +178,19 @@ watch(page, () => {
   color: red;
 }
 
-//.page {
-//  &__wrapper {
-//    display: flex;
-//    margin-top: $base-margin;
-//  }
-//
-//  border: 1px solid #000000;
-//  padding: $base-padding;
-//}
-//
-//.current-page {
-//  border: 2px solid $secondary-color;
-//}
+.page {
+  &__wrapper {
+    display: flex;
+    margin-top: $base-margin;
+  }
+
+  border: 1px solid #000000;
+  padding: $base-padding;
+}
+
+.current-page {
+  border: 2px solid $secondary-color;
+}
 
 .observer {
   height: 100px; /* Height for the observer element */

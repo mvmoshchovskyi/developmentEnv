@@ -20,6 +20,7 @@ const createPost = (): void => {
   <form @submit.prevent="createPost">
     <h4>Create post</h4>
     <custom-input
+      v-focus
       type="text"
       placeholder="Name"
       v-model="post.title"
