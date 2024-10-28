@@ -81,7 +81,7 @@ const sortedAndSearchedPosts = computed((): IPost[] => {
   return sortedPosts.value.filter(post => post.title.toLowerCase().includes(searchQuery.value.toLowerCase()));
 });
 
-
+// console.log($env)
 // infinity scroll
 // const loadMorePosts = () => {
 //   page.value += 1; // Increment page number

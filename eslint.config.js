@@ -34,7 +34,7 @@ export default [
 			'no-tabs': 'off', // Вимкнення перевірки на табуляції (якщо використовуєте їх)
 			'space-in-parens': ['error', 'never'], // Пробіли у дужках
 			'comma-dangle': ['error', 'always-multiline'], // Кінцеві коми
-			'no-console': 'warn', // Попередження для console.log
+      'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
 			'camelcase': 'error', // Правила для camelCase
 			'no-undef': 'warn',
 			'semi': ['error', 'always'], // Додаємо правило для обов'язкової крапки з комою
