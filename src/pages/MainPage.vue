@@ -1,10 +1,18 @@
 <script setup lang="ts">
+import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { PreferredLanguage, UrlLocale } from '@/i18n/locales';
 
-// import Navbar from '@/components/AppNavbar.vue';
+const route = useRoute();
+const { locale } = useI18n({ useScope: 'global' });
+
+if (route.query.lang === UrlLocale.Ukraine) {
+  locale.value = PreferredLanguage.Ukraine;
+}
+
 </script>
 
 <template>
-<!--  <Navbar/>-->
   <h2>Main</h2>
 </template>
 

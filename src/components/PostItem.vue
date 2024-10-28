@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { IPost } from '@/types/post.ts';
 import { useRouter } from 'vue-router';
-
+import { CommonMessagesLocaleSchema } from '@/i18n/locales/common.constants.ts';
+import { ButtonLocaleSchema } from '@/i18n/locales';
 
 const emit = defineEmits<{
   remove: [post: IPost];
@@ -11,6 +12,10 @@ const router = useRouter();
 
 const props = defineProps<{ post: IPost }>();
 
+const text = {
+  common: CommonMessagesLocaleSchema,
+  buttons: ButtonLocaleSchema,
+};
 const openPost = (post: IPost) => {
   router.push(`posts/${post.id}`);
 };
@@ -24,19 +29,25 @@ const removePost = (post: IPost) => {
   <div class="post">
     <div>
       <div><strong>{{ props.post.id }}</strong></div>
-      <div><strong>Name:</strong>{{ props.post.title }}</div>
-      <div><strong>Description:</strong>{{ props.post.body }}</div>
+      <div>
+        <strong>{{ $t(text.common.Name) }}</strong>
+        {{ props.post.title }}
+      </div>
+      <div>
+        <strong>{{ $t(text.common.Description) }}</strong>
+        {{ props.post.body }}
+      </div>
     </div>
     <div class="post__btns">
       <custom-button
         @click="openPost(post)"
       >
-        Open
+        <strong>{{ $t(text.buttons.Open) }}</strong>
       </custom-button>
       <custom-button
         @click="removePost(post)"
       >
-        Remove
+        <strong>{{ $t(text.buttons.Remove) }}</strong>
       </custom-button>
     </div>
   </div>

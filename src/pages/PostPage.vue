@@ -55,7 +55,7 @@ const createPost = (newPost: IPost): void => {
 const removePost = (post: IPost): void => {
   const index = posts.value.findIndex(p => post.id === p.id);
   if (index !== -1) {
-    posts.value.splice(index, 1); // Remove the post using splice
+    posts.value.splice(index, 1);
   }
 };
 
@@ -114,7 +114,9 @@ const sortedAndSearchedPosts = computed((): IPost[] => {
       v-model="searchQuery"
     />
     <div class="posts__btns">
-      <custom-button @click="showDialog">
+      <custom-button
+        @click="showDialog"
+      >
         Create Post
       </custom-button>
 
